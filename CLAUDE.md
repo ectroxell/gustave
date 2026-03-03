@@ -14,6 +14,7 @@ Node.js project using ES modules (`"type": "module"`). Node and npm versions are
 - **ORM**: Drizzle ORM + Drizzle Kit
 - **Runtime**: `tsx` for running TypeScript directly
 - **TypeScript**: ESM with `"module": "NodeNext"`
+- **Linting & Formatting**: ESLint with Stylistic plugin (flat config)
 
 ## Project Structure
 
@@ -22,6 +23,7 @@ gustave/
 ├── package.json
 ├── tsconfig.json
 ├── drizzle.config.ts
+├── eslint.config.js         # ESLint flat config with Stylistic
 ├── .gitignore
 ├── CLAUDE.md
 ├── src/
@@ -37,12 +39,23 @@ gustave/
 
 ## Commands
 
+**Database:**
+
 - `npm run db:push` — push schema to SQLite database
 - `npm run db:generate` — generate Drizzle migrations
 - `npm run db:seed` — seed the database with Zelda-themed data
 - `npm run db:studio` — open Drizzle Studio to inspect data
 - `npm run db:reset` — delete DB, re-push schema, and re-seed
+
+**Code quality:**
+
 - `npm run typecheck` — run TypeScript type checking
+- `npm run lint` — run ESLint checks (includes formatting via Stylistic)
+- `npm run lint:fix` — run ESLint checks and auto-fix issues (auto-formats code)
+
+## Guidelines
+
+- **Only run `db:*` commands when the change is database-related** (schema, seed data, migrations). Do not run database commands to verify unrelated changes like linting, formatting, or dependency updates. Use `npm run lint` and `npm run typecheck` to verify code quality changes.
 
 ## Database Schema
 
@@ -59,7 +72,10 @@ All new types should use `type` keyword:
 type Character = { id: number; name: string };
 
 // ✗ Avoid
-interface Character { id: number; name: string; }
+interface Character {
+  id: number;
+  name: string;
+}
 ```
 
 ### Drizzle Type Extraction
@@ -67,8 +83,8 @@ interface Character { id: number; name: string; }
 For database row types, use Drizzle's inference helpers rather than writing types manually:
 
 ```ts
-import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
-import { characters } from "./schema.js";
+import type { InferSelectModel, InferInsertModel } from 'drizzle-orm';
+import { characters } from './schema.js';
 
 // Row type (for SELECT results)
 type Character = InferSelectModel<typeof characters>;
@@ -86,11 +102,13 @@ When a type is genuinely unknown, use `unknown` with narrowing rather than `any`
 ```ts
 // ✓ Preferred
 function process(data: unknown) {
-  if (typeof data === "string") {
+  if (typeof data === 'string') {
     // data is string here
   }
 }
 
 // ✗ Avoid
-function process(data: any) { /* no type safety */ }
+function process(data: any) {
+  /* no type safety */
+}
 ```
