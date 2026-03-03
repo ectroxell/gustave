@@ -10,34 +10,50 @@ Node.js project using ES modules (`"type": "module"`). Node and npm versions are
 
 ## Tech Stack
 
+- **Frontend**: Vue 3 (SFCs) via Vite
+- **Backend**: Express (Node.js)
 - **Database**: SQLite via `better-sqlite3`
 - **ORM**: Drizzle ORM + Drizzle Kit
 - **Runtime**: `tsx` for running TypeScript directly
-- **TypeScript**: ESM with `"module": "NodeNext"`
-- **Linting & Formatting**: ESLint with Stylistic plugin (flat config)
+- **TypeScript**: ESM — server uses `"module": "NodeNext"`, client uses `"module": "ESNext"` with bundler resolution
+- **Linting & Formatting**: ESLint with Stylistic plugin and `eslint-plugin-vue` (flat config)
 
 ## Project Structure
 
-```
+```txt
 gustave/
 ├── package.json
-├── tsconfig.json
+├── index.html               # Vite HTML entry point
+├── vite.config.ts            # Vite configuration (Vue plugin)
+├── tsconfig.json             # Project references (server + client)
+├── tsconfig.server.json      # Server TypeScript config (NodeNext)
+├── tsconfig.client.json      # Client TypeScript config (ESNext/bundler)
 ├── drizzle.config.ts
-├── eslint.config.js         # ESLint flat config with Stylistic
+├── eslint.config.js          # ESLint flat config with Stylistic + Vue
 ├── .gitignore
 ├── CLAUDE.md
 ├── src/
+│   ├── server/
+│   │   └── index.ts          # Express server with Vite dev middleware
+│   ├── client/
+│   │   ├── App.vue           # Root Vue component
+│   │   ├── main.ts           # Vue entry point
+│   │   └── env.d.ts          # Vite/Vue type shims
 │   └── db/
-│       ├── schema.ts        # Table definitions
-│       ├── index.ts         # DB connection (exports `db`)
-│       └── seed.ts          # Seed script with all data
+│       ├── schema.ts         # Table definitions
+│       ├── index.ts          # DB connection (exports `db`)
+│       └── seed.ts           # Seed script with all data
 ├── data/
 │   ├── .gitkeep
-│   └── gustave.db           # (gitignored) SQLite file
-└── drizzle/                 # (auto-generated) migrations
+│   └── gustave.db            # (gitignored) SQLite file
+└── drizzle/                  # (auto-generated) migrations
 ```
 
 ## Commands
+
+**Dev server:**
+
+- `npm start` — start Express + Vite dev server at `http://localhost:3030`
 
 **Database:**
 
@@ -49,8 +65,8 @@ gustave/
 
 **Code quality:**
 
-- `npm run typecheck` — run TypeScript type checking
-- `npm run lint` — run ESLint checks (includes formatting via Stylistic)
+- `npm run typecheck` — type check both client (vue-tsc) and server (tsc)
+- `npm run lint` — run ESLint checks (includes formatting via Stylistic + Vue rules)
 - `npm run lint:fix` — run ESLint checks and auto-fix issues (auto-formats code)
 
 ## Guidelines
