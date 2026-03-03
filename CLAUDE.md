@@ -47,3 +47,50 @@ gustave/
 ## Database Schema
 
 Five tables: `characters`, `items`, `warehouse_locations`, `purchase_orders`, `purchase_order_items`. Schema defined in `src/db/schema.ts`. Foreign keys are enforced via SQLite pragma. WAL journal mode is enabled.
+
+## TypeScript Patterns
+
+### Use `type` not `interface`
+
+All new types should use `type` keyword:
+
+```ts
+// ✓ Preferred
+type Character = { id: number; name: string };
+
+// ✗ Avoid
+interface Character { id: number; name: string; }
+```
+
+### Drizzle Type Extraction
+
+For database row types, use Drizzle's inference helpers rather than writing types manually:
+
+```ts
+import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
+import { characters } from "./schema.js";
+
+// Row type (for SELECT results)
+type Character = InferSelectModel<typeof characters>;
+
+// Insert type (for INSERT/UPDATE input)
+type NewCharacter = InferInsertModel<typeof characters>;
+```
+
+Define these at the top of `schema.ts` and re-export them so callers don't need to derive them.
+
+### Avoid `any`, prefer `unknown`
+
+When a type is genuinely unknown, use `unknown` with narrowing rather than `any`:
+
+```ts
+// ✓ Preferred
+function process(data: unknown) {
+  if (typeof data === "string") {
+    // data is string here
+  }
+}
+
+// ✗ Avoid
+function process(data: any) { /* no type safety */ }
+```
