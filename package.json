@@ -11,6 +11,7 @@
     "db:seed": "tsx src/db/seed.ts",
     "db:studio": "drizzle-kit studio",
     "db:reset": "rm -f data/gustave.db* && npm run db:push && npm run db:seed",
+    "db:schema-doc": "tsx scripts/generate-schema-doc.ts",
     "typecheck": "vue-tsc --noEmit -p tsconfig.client.json && tsc --noEmit -p tsconfig.server.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

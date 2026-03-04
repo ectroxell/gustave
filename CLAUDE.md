@@ -32,6 +32,7 @@ gustave/
 ├── eslint.config.js          # ESLint flat config with Stylistic + Vue
 ├── .gitignore
 ├── CLAUDE.md
+├── DATABASE_SCHEMA.md          # (auto-generated) full schema reference
 ├── src/
 │   ├── server/
 │   │   └── index.ts          # Express server with Vite dev middleware
@@ -62,6 +63,7 @@ gustave/
 - `npm run db:seed` — seed the database with Zelda-themed data
 - `npm run db:studio` — open Drizzle Studio to inspect data
 - `npm run db:reset` — delete DB, re-push schema, and re-seed
+- `npm run db:schema-doc` — regenerate `DATABASE_SCHEMA.md` from schema.ts
 
 **Code quality:**
 
@@ -75,7 +77,7 @@ gustave/
 
 ## Database Schema
 
-Five tables: `characters`, `items`, `warehouse_locations`, `purchase_orders`, `purchase_order_items`. Schema defined in `src/db/schema.ts`. Foreign keys are enforced via SQLite pragma. WAL journal mode is enabled.
+Full schema is documented in `DATABASE_SCHEMA.md` at the project root (auto-generated from `src/db/schema.ts` — regenerate with `npm run db:schema-doc`). Foreign keys are enforced via SQLite pragma. WAL journal mode is enabled.
 
 ## TypeScript Patterns
 
