@@ -20,12 +20,10 @@ Gustave uses:
 - Database schema is in `src/db/schema.ts`, connection in `src/db/index.ts`
 - Full schema documented in `DATABASE_SCHEMA.md` at the project root (auto-generated from `src/db/schema.ts`)
 
-## TypeScript Rules (MUST follow)
+## Backend TypeScript Conventions
 
-- Use `type` keyword, never `interface`
-- Use Drizzle's `InferSelectModel` and `InferInsertModel` for database row types
-- Never use `any` — use `unknown` with type narrowing when needed
 - All imports use `.js` extensions for ESM compatibility
+- Type API response shapes explicitly
 
 ## API Development Guidelines
 
