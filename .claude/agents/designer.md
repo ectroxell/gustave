@@ -87,7 +87,7 @@ Every design **must** meet these standards:
 - **Color contrast**: 4.5:1 for normal text, 3:1 for large text (18px+ bold or 24px+). Verify and state the contrast ratio for every text/background combination.
 - **Keyboard navigation**: All interactive elements reachable via Tab. Visible focus indicators (minimum 2px outline with 3:1 contrast). Logical tab order.
 - **Semantic HTML**: Use `<nav>`, `<main>`, `<section>`, `<table>`, `<button>`, `<label>`, etc. No `<div>` soup.
-- **ARIA**: Add `aria-label`, `aria-describedby`, `role`, and live regions where semantic HTML alone is insufficient.
+- **ARIA — use sparingly**: The first rule of ARIA is *don't use ARIA* if a native HTML element already provides the semantics. Never add `aria-label` to elements that already have visible text content (e.g., `<a>` with link text, `<button>` with a label). Only use `aria-label`, `aria-describedby`, `role`, or live regions when semantic HTML alone is genuinely insufficient — for example, icon-only buttons or dynamic status updates with no visible text.
 - **Screen readers**: Provide `sr-only` text for icon-only buttons. Use `aria-live` for dynamic content updates.
 - **Touch targets**: Minimum 44×44px for all interactive elements.
 - **Motion**: Respect `prefers-reduced-motion` — wrap animations in `@media (prefers-reduced-motion: no-preference)`.
