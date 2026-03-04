@@ -7,7 +7,7 @@ describe('AppButton', () => {
   it('renders slot content', () => {
     render(AppButton, { slots: { default: 'Click me' } });
     expect(screen.getByRole('button', { name: 'Click me' }))
-      .toBeInTheDocument();
+      .toBeVisible();
   });
 
   it('applies primary variant classes by default', () => {
