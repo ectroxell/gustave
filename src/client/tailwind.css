@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #1a1a2e;
+  --color-bg-surface: #16213e;
+  --color-bg-elevated: #0f3460;
+  --color-text-primary: #e0d9b0;
+  --color-text-heading: #5dbb63;
+  --color-accent-green: #5dbb63;
+  --color-accent-gold: #d4a017;
+  --color-accent-red: #c0392b;
+  --color-accent-blue: #2980b9;
+  --color-border: #2a2a4a;
+  --font-display: 'Montserrat', system-ui, sans-serif;
+  --font-data: 'JetBrains Mono', 'Fira Code', monospace;
+}
