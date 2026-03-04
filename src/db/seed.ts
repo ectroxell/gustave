@@ -5,6 +5,8 @@ import {
   warehouseLocations,
   purchaseOrders,
   purchaseOrderItems,
+  receipts,
+  receiptLines,
 } from './schema.js';
 
 // --- Characters ---
@@ -478,6 +480,10 @@ async function seed() {
   let poCount = 0;
   let lineCount = 0;
 
+  // Track PO IDs and PO item IDs for receipt seeding
+  const poIdByNumber = new Map<string, number>();
+  const poItemIdMap = new Map<string, Map<string, number>>();
+
   for (const po of poData) {
     const [insertedPo] = db
       .insert(purchaseOrders)
@@ -490,8 +496,11 @@ async function seed() {
       .all();
     poCount++;
 
+    const lineMap = new Map<string, number>();
+    poIdByNumber.set(po.poNumber, insertedPo.id);
+
     for (const line of po.lines) {
-      db.insert(purchaseOrderItems)
+      const [insertedLine] = db.insert(purchaseOrderItems)
         .values({
           purchaseOrderId: insertedPo.id,
           itemId: itemByName.get(line.item)!,
@@ -501,13 +510,110 @@ async function seed() {
             ? locByName.get(line.location)!
             : null,
         })
-        .run();
+        .returning()
+        .all();
+      lineMap.set(line.item, insertedLine.id);
       lineCount++;
     }
+
+    poItemIdMap.set(po.poNumber, lineMap);
   }
 
   console.log(`  Purchase Orders: ${poCount}`);
   console.log(`  Purchase Order Items: ${lineCount}`);
+
+  // --- Receipts ---
+  const receiptData: {
+    receiptNumber: string;
+    poNumber: string;
+    notes: string | null;
+    lines: { item: string; qtyReceived: number; isReceived: boolean }[];
+  }[] = [
+    {
+      receiptNumber: 'REC-HYR-001',
+      poNumber: 'PO-HYR-001',
+      notes: 'Full shipment received from Beedle',
+      lines: [
+        { item: 'Arrow', qtyReceived: 50, isReceived: true },
+        { item: 'Bomb', qtyReceived: 20, isReceived: true },
+        { item: 'Red Potion', qtyReceived: 10, isReceived: true },
+        { item: 'Deku Nut', qtyReceived: 5, isReceived: true },
+      ],
+    },
+    {
+      receiptNumber: 'REC-HYR-002',
+      poNumber: 'PO-HYR-002',
+      notes: 'Partial shipment — arrows short, fire arrows and bombs pending',
+      lines: [
+        { item: 'Master Sword', qtyReceived: 1, isReceived: true },
+        { item: 'Hylian Shield', qtyReceived: 1, isReceived: true },
+        { item: 'Arrow', qtyReceived: 20, isReceived: false },
+      ],
+    },
+    {
+      receiptNumber: 'REC-HYR-003',
+      poNumber: 'PO-HYR-003',
+      notes: 'Partial shipment — ocarina still missing',
+      lines: [
+        { item: 'Hylian Rice', qtyReceived: 10, isReceived: true },
+        { item: 'Blue Potion', qtyReceived: 3, isReceived: false },
+        { item: 'Hearty Durian', qtyReceived: 4, isReceived: false },
+      ],
+    },
+    {
+      receiptNumber: 'REC-HYR-004',
+      poNumber: 'PO-HYR-006',
+      notes: 'Full shipment received from Sidon',
+      lines: [
+        { item: 'Ice Arrow', qtyReceived: 20, isReceived: true },
+        { item: 'Blue Potion', qtyReceived: 3, isReceived: true },
+        { item: 'Red Potion', qtyReceived: 5, isReceived: true },
+      ],
+    },
+    {
+      receiptNumber: 'REC-HYR-005',
+      poNumber: 'PO-HYR-007',
+      notes: 'Partial shipment — broadswords and shields pending',
+      lines: [
+        { item: 'Ancient Screw', qtyReceived: 15, isReceived: false },
+        { item: 'Shock Arrow', qtyReceived: 5, isReceived: true },
+        { item: 'Rubber Armor', qtyReceived: 1, isReceived: false },
+      ],
+    },
+  ];
+
+  let receiptCount = 0;
+  let receiptLineCount = 0;
+
+  for (const rec of receiptData) {
+    const [insertedReceipt] = db
+      .insert(receipts)
+      .values({
+        receiptNumber: rec.receiptNumber,
+        purchaseOrderId: poIdByNumber.get(rec.poNumber)!,
+        notes: rec.notes,
+      })
+      .returning()
+      .all();
+    receiptCount++;
+
+    const poItemMap = poItemIdMap.get(rec.poNumber)!;
+
+    for (const line of rec.lines) {
+      db.insert(receiptLines)
+        .values({
+          receiptId: insertedReceipt.id,
+          purchaseOrderItemId: poItemMap.get(line.item)!,
+          quantityReceived: line.qtyReceived,
+          isReceived: line.isReceived,
+        })
+        .run();
+      receiptLineCount++;
+    }
+  }
+
+  console.log(`  Receipts: ${receiptCount}`);
+  console.log(`  Receipt Lines: ${receiptLineCount}`);
   console.log('Done!');
 }
 

@@ -68,6 +68,21 @@ export const purchaseOrders = sqliteTable('purchase_orders', {
     .default(sql`(current_timestamp)`),
 });
 
+export const receipts = sqliteTable('receipts', {
+  id: integer('id')
+    .primaryKey({ autoIncrement: true }),
+  receiptNumber: text('receipt_number')
+    .notNull()
+    .unique(),
+  purchaseOrderId: integer('purchase_order_id')
+    .notNull()
+    .references(() => purchaseOrders.id),
+  notes: text('notes'),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(current_timestamp)`),
+});
+
 export const purchaseOrderItems = sqliteTable('purchase_order_items', {
   id: integer('id')
     .primaryKey({ autoIncrement: true }),
@@ -86,6 +101,25 @@ export const purchaseOrderItems = sqliteTable('purchase_order_items', {
     .references(
       () => warehouseLocations.id,
     ),
+  createdAt: text('created_at')
+    .notNull()
+    .default(sql`(current_timestamp)`),
+});
+
+export const receiptLines = sqliteTable('receipt_lines', {
+  id: integer('id')
+    .primaryKey({ autoIncrement: true }),
+  receiptId: integer('receipt_id')
+    .notNull()
+    .references(() => receipts.id),
+  purchaseOrderItemId: integer('purchase_order_item_id')
+    .notNull()
+    .references(() => purchaseOrderItems.id),
+  quantityReceived: integer('quantity_received')
+    .notNull(),
+  isReceived: integer('is_received', { mode: 'boolean' })
+    .notNull()
+    .default(false),
   createdAt: text('created_at')
     .notNull()
     .default(sql`(current_timestamp)`),
