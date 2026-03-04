@@ -1,11 +1,9 @@
-import express from 'express';
 import { createServer as createViteServer } from 'vite';
+import { app } from './app.js';
 
 const PORT = 3030;
 
 async function start() {
-  const app = express();
-
   const vite = await createViteServer({
     server: { middlewareMode: true },
     appType: 'spa',
