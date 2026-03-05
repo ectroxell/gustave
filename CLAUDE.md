@@ -71,9 +71,16 @@ gustave/
 - `npm run lint` — run ESLint checks (includes formatting via Stylistic + Vue rules)
 - `npm run lint:fix` — run ESLint checks and auto-fix issues (auto-formats code)
 
+**Testing:**
+
+- `npm test` — run all tests once
+- `npm run test:client` — client tests only
+- `npm run test:server` — server tests only
+
 ## Guidelines
 
 - **Only run `db:*` commands when the change is database-related** (schema, seed data, migrations). Do not run database commands to verify unrelated changes like linting, formatting, or dependency updates. Use `npm run lint` and `npm run typecheck` to verify code quality changes.
+- **Run `npm test` after making code changes** to verify nothing is broken. Scope test runs to the relevant project (`test:client` or `test:server`) when the change is isolated to one side.
 
 ## Database Schema
 
