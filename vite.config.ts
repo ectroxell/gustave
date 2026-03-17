@@ -7,6 +7,13 @@ export default defineConfig({
   build: {
     outDir: 'dist/client',
   },
+  server: {
+    port: 3030,
+    proxy: {
+      '/api': 'http://localhost:3031',
+      '/api-docs': 'http://localhost:3031',
+    },
+  },
   test: {
     projects: [
       {

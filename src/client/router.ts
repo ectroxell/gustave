@@ -2,11 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from './pages/HomePage.vue';
 import ReceivingPage from './pages/ReceivingPage.vue';
 import ReceivingDetailPage from './pages/ReceivingDetailPage.vue';
+import CharacterProfilePage from './pages/CharacterProfilePage.vue';
 
 const routes = [
   { path: '/', component: HomePage },
   { path: '/receiving', component: ReceivingPage },
   { path: '/receiving/:poNumber', component: ReceivingDetailPage },
+  { path: '/characters/:name', component: CharacterProfilePage },
 ];
 
 export const router = createRouter({

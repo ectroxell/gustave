@@ -45,7 +45,9 @@ You are an expert in testing TypeScript applications. You write and review unit 
 
 - Use `supertest` against the Express `app` (imported from `src/server/app.ts`)
 - Test HTTP status codes, response shapes, and error cases
-- For database-dependent tests, document the pattern when it's established (deferred for now)
+- **Test isolation is mandatory**: Every test must be independently runnable. Tests must NOT depend on side effects from other tests. Use `beforeEach`/`afterEach` to reset database state when tests mutate data. A test that fails when run with `.only` is a broken test.
+- For tests that mutate database state (POST/PUT/DELETE endpoints), reset affected rows in `afterEach` so the next test starts from known seed state
+- Since `globals: true` is configured, do not import `describe`, `it`, `expect` from vitest — they are available globally
 
 ## Review Checklist
 
