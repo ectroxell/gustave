@@ -68,6 +68,11 @@ Gustave uses:
 - Catch async errors properly (use a wrapper or express-async-errors)
 - Log errors server-side with enough context for debugging
 
+### Testing
+
+- When writing tests for endpoints that mutate data, **each test must be independently runnable**. Use `beforeEach`/`afterEach` to reset database state so tests never depend on side effects from other tests. A test that fails when run with `.only` is a broken test.
+- Since `globals: true` is configured in vitest, do not import `describe`, `it`, `expect` from vitest — they are available globally
+
 ## Workflow
 
 1. Before writing code, briefly state your plan: which endpoints, what HTTP methods, what data shapes

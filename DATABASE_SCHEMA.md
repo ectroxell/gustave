@@ -10,13 +10,15 @@ npm run db:schema-doc
 
 ## `characters` (export: `characters`)
 
-| TS Name   | SQL Name   | Type          | Nullable | PK  | Default               | FK Reference |
-|-----------|------------|---------------|----------|-----|-----------------------|--------------|
-| id        | id         | SQLiteInteger | No       | Yes | auto                  |              |
-| name      | name       | SQLiteText    | No       |     |                       |              |
-| title     | title      | SQLiteText    | No       |     |                       |              |
-| race      | race       | SQLiteText    | No       |     |                       |              |
-| createdAt | created_at | SQLiteText    | No       |     | `(current_timestamp)` |              |
+| TS Name             | SQL Name              | Type          | Nullable | PK  | Default               | FK Reference |
+|---------------------|-----------------------|---------------|----------|-----|-----------------------|--------------|
+| id                  | id                    | SQLiteInteger | No       | Yes | auto                  |              |
+| name                | name                  | SQLiteText    | No       |     |                       |              |
+| title               | title                 | SQLiteText    | No       |     |                       |              |
+| race                | race                  | SQLiteText    | No       |     |                       |              |
+| bio                 | bio                   | SQLiteText    | No       |     |                       |              |
+| firstAppearanceYear | first_appearance_year | SQLiteInteger | No       |     |                       |              |
+| createdAt           | created_at            | SQLiteText    | No       |     | `(current_timestamp)` |              |
 
 ## `items` (export: `items`)
 

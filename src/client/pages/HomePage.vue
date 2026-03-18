@@ -1,3 +1,38 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
+
+const router = useRouter();
+const poSearch = ref('');
+const isSearching = ref(false);
+const searchError = ref('');
+
+async function onSearch() {
+  const value = poSearch.value.trim();
+  if (!value) return;
+
+  searchError.value = '';
+  isSearching.value = true;
+
+  try {
+    const res = await fetch(`/api/purchase-orders/${encodeURIComponent(value)}`);
+    if (res.status === 404) {
+      searchError.value = `No purchase order found for "${value}".`;
+      return;
+    }
+    if (!res.ok) {
+      searchError.value = 'Something went wrong. Please try again.';
+      return;
+    }
+    router.push(`/receiving/${encodeURIComponent(value)}`);
+  } catch {
+    searchError.value = 'Could not connect to the server. Please try again.';
+  } finally {
+    isSearching.value = false;
+  }
+}
+</script>
+
 <template>
   <!-- AppShell -->
   <div class="min-h-screen bg-bg-primary font-display text-text-primary">
@@ -17,37 +52,42 @@
     <div class="relative z-10">
       <!-- AppNav -->
       <nav
-        role="navigation"
         aria-label="Main navigation"
-        class="flex items-center justify-between px-6 py-4 border-b border-border bg-bg-surface/80 backdrop-blur-sm"
+        class="flex items-center justify-between px-6 py-4 border-b border-accent-green/10 bg-bg-elevated/40 backdrop-blur-md"
+        style="box-shadow: 0 1px 8px rgba(0,0,0,0.3), 0 1px 0 rgba(93,187,99,0.06)"
       >
-        <a
-          href="/"
-          class="font-display text-xl font-bold tracking-wide text-text-heading
+        <RouterLink
+          to="/"
+          class="nav-brand inline-flex items-center gap-2 font-display text-xl font-bold tracking-wide text-text-heading
                  hover:text-accent-green transition-colors duration-200
                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-green focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary rounded"
         >
+          <img
+            src="/src/client/assets/zelda-crate.png"
+            alt=""
+            class="crate-logo w-6 h-6"
+          >
           Gustave's Warehouse
-        </a>
+        </RouterLink>
 
         <div class="flex items-center gap-6">
-          <a
-            href="/"
+          <RouterLink
+            to="/"
             class="font-display text-sm font-semibold uppercase tracking-widest text-text-primary
                    hover:text-accent-green transition-colors duration-200
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-green focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary rounded px-2 py-1"
             aria-current="page"
           >
             Home
-          </a>
-          <a
-            href="/receiving"
+          </RouterLink>
+          <RouterLink
+            to="/receiving"
             class="font-display text-sm font-semibold uppercase tracking-widest text-text-primary/60
                    hover:text-accent-green transition-colors duration-200
                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-green focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary rounded px-2 py-1"
           >
             Receiving
-          </a>
+          </RouterLink>
         </div>
       </nav>
 
@@ -94,6 +134,7 @@
               role="search"
               aria-label="Search purchase orders"
               class="flex items-stretch gap-0 w-full"
+              @submit.prevent="onSearch"
             >
               <div class="relative flex-1">
                 <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-primary/40">
@@ -124,26 +165,45 @@
 
                 <input
                   id="po-search-home"
+                  v-model="poSearch"
                   type="text"
                   placeholder="Enter PO number..."
-                  class="w-full h-14 pl-12 pr-4 rounded-l-lg border border-r-0 border-white/15
-                         bg-bg-elevated text-text-primary font-data text-base tracking-wide
-                         placeholder:text-text-primary/30
-                         focus:outline-none focus:border-accent-green focus:ring-1 focus:ring-accent-green
-                         transition-colors duration-200"
+                  :aria-invalid="!!searchError || undefined"
+                  aria-describedby="po-search-error"
+                  :class="[
+                    'w-full h-14 pl-12 pr-4 rounded-l-lg border border-r-0',
+                    'bg-bg-elevated text-text-primary font-data text-base tracking-wide',
+                    'placeholder:text-text-primary/30',
+                    'focus:outline-none focus:ring-1',
+                    'transition-colors duration-200',
+                    searchError
+                      ? 'border-red-500/60 focus:border-red-500 focus:ring-red-500'
+                      : 'border-white/15 focus:border-accent-green focus:ring-accent-green',
+                  ]"
+                  @input="searchError = ''"
                 >
               </div>
 
               <button
                 type="submit"
+                :disabled="isSearching"
                 class="h-14 px-6 rounded-r-lg bg-accent-green text-bg-primary font-display font-bold text-sm uppercase tracking-widest
                        hover:bg-accent-green/85 active:bg-accent-green/70
                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-green focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary
-                       transition-all duration-200 whitespace-nowrap"
+                       transition-all duration-200 whitespace-nowrap
+                       disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Look Up
+                {{ isSearching ? 'Looking up…' : 'Look Up' }}
               </button>
             </form>
+            <span
+              v-if="searchError"
+              id="po-search-error"
+              role="alert"
+              class="mt-2 block text-sm text-red-400 font-display"
+            >
+              {{ searchError }}
+            </span>
           </div>
         </section>
 
@@ -158,15 +218,34 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <!-- Pending Card -->
-            <div
-              class="relative bg-bg-elevated rounded-lg border border-white/15 overflow-hidden
-                     group hover:border-accent-blue/40 transition-colors duration-300"
-              aria-label="2 pending orders"
+            <RouterLink
+              to="/receiving?status=pending"
+              class="dashboard-card relative block bg-bg-elevated rounded-lg border border-white/15 overflow-hidden
+                     group hover:border-accent-blue/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent-blue/5
+                     transition-all duration-300
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
             >
               <!-- Left accent stripe -->
               <div
                 class="absolute left-0 top-0 bottom-0 w-1 bg-accent-blue"
               />
+
+              <!-- Hover arrow -->
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-60 transition-opacity duration-300 text-accent-blue">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
 
               <div class="pl-5 pr-4 py-5">
                 <div class="flex items-center justify-between mb-3">
@@ -198,17 +277,36 @@
                   2
                 </span>
               </div>
-            </div>
+            </RouterLink>
 
             <!-- Partial Card -->
-            <div
-              class="relative bg-bg-elevated rounded-lg border border-white/15 overflow-hidden
-                     group hover:border-accent-gold/40 transition-colors duration-300"
-              aria-label="3 partially received orders"
+            <RouterLink
+              to="/receiving?status=partial"
+              class="dashboard-card relative block bg-bg-elevated rounded-lg border border-white/15 overflow-hidden
+                     group hover:border-accent-gold/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent-gold/5
+                     transition-all duration-300
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-gold focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
             >
               <div
                 class="absolute left-0 top-0 bottom-0 w-1 bg-accent-gold"
               />
+
+              <!-- Hover arrow -->
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-60 transition-opacity duration-300 text-accent-gold">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
 
               <div class="pl-5 pr-4 py-5">
                 <div class="flex items-center justify-between mb-3">
@@ -242,17 +340,36 @@
                   3
                 </span>
               </div>
-            </div>
+            </RouterLink>
 
             <!-- Received Card -->
-            <div
-              class="relative bg-bg-elevated rounded-lg border border-white/15 overflow-hidden
-                     group hover:border-accent-green/40 transition-colors duration-300"
-              aria-label="2 fully received orders"
+            <RouterLink
+              to="/receiving?status=received"
+              class="dashboard-card relative block bg-bg-elevated rounded-lg border border-white/15 overflow-hidden
+                     group hover:border-accent-green/40 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent-green/5
+                     transition-all duration-300
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-green focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary"
             >
               <div
                 class="absolute left-0 top-0 bottom-0 w-1 bg-accent-green"
               />
+
+              <!-- Hover arrow -->
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-60 transition-opacity duration-300 text-accent-green">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
 
               <div class="pl-5 pr-4 py-5">
                 <div class="flex items-center justify-between mb-3">
@@ -280,7 +397,7 @@
                   2
                 </span>
               </div>
-            </div>
+            </RouterLink>
           </div>
         </section>
       </main>
@@ -316,6 +433,17 @@
 
   main > section:nth-child(3) {
     animation-delay: 0.25s;
+  }
+
+  /* Crate logo wobble on nav hover */
+  @keyframes crate-wobble {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-6deg); }
+    75% { transform: rotate(6deg); }
+  }
+
+  .nav-brand:hover .crate-logo {
+    animation: crate-wobble 0.4s ease-in-out;
   }
 }
 </style>

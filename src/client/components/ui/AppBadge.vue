@@ -34,6 +34,10 @@ const dotClasses = computed(() => {
   };
   return map[props.variant];
 });
+
+const shouldPulse = computed(() => {
+  return ['pending', 'partial', 'info', 'warning'].includes(props.variant);
+});
 </script>
 
 <template>
@@ -46,8 +50,25 @@ const dotClasses = computed(() => {
     ]"
   >
     <span
-      :class="['w-1.5 h-1.5 rounded-full', dotClasses]"
+      :class="['w-1.5 h-1.5 rounded-full', dotClasses, { 'dot-pulse': shouldPulse }]"
     />
     <slot />
   </span>
 </template>
+
+<style scoped>
+@media (prefers-reduced-motion: no-preference) {
+  .dot-pulse {
+    animation: dot-pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes dot-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+</style>

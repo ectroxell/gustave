@@ -18,6 +18,19 @@ export default defineConfig([
     semi: true,
   }),
   {
+    files: ['src/client/**/*.{ts,vue}'],
+    languageOptions: {
+      globals: {
+        fetch: 'readonly',
+        window: 'readonly',
+        document: 'readonly',
+        console: 'readonly',
+        HTMLElement: 'readonly',
+        Event: 'readonly',
+      },
+    },
+  },
+  {
     files: ['**/*.vue'],
     languageOptions: {
       parserOptions: {

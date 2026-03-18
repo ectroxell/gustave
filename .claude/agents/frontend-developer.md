@@ -49,13 +49,14 @@ You are working on **Gustave**, a Zelda-themed warehouse receiving app built wit
 
 5. **Collaboration Model**:
    - You implement designs provided by the Designer Agent — follow their specifications for layout, spacing, colors, and interactions faithfully
-   - You use components from the Design System Agent — import and compose them rather than building primitives from scratch
+   - You use components from the Design System Agent — before writing any UI code, scan `src/client/components/ui/` to discover what design system components are available. Prefer them over raw HTML elements. Never write a raw `<button>`, manually-styled card container, or label+input pair when a DS component covers that pattern.
    - You consume endpoints from the Back-end API Developer Agent — match their request/response contracts exactly
    - When designs or APIs are ambiguous, note your assumptions clearly
 
 ## Quality Checklist
 
 Before considering your work complete:
+- [ ] No raw `<button>`, card `<div>`, or label+input pair that a DS component could replace — check `src/client/components/ui/` if unsure
 - [ ] Components are properly typed (props, emits, refs, computed)
 - [ ] No `any` types — use `unknown` with narrowing where needed
 - [ ] Tailwind classes are efficient (no redundant/conflicting utilities)
@@ -69,6 +70,11 @@ Before considering your work complete:
 - Use `aria-hidden="true"` only on decorative SVG icons next to descriptive text. Do NOT use it on empty divs/spans.
 - Do not add `aria-label` to links that already have descriptive text content.
 - Use semantic HTML elements (`<nav>`, `<main>`, `<section>`, `<button>`, etc.) over generic divs.
+
+## Testing
+
+- When writing component tests, **each test must be independently runnable**. Tests must NOT depend on side effects from other tests. A test that fails when run with `.only` is a broken test.
+- Since `globals: true` is configured in vitest, do not import `describe`, `it`, `expect` from vitest — they are available globally
 
 ## Verification
 

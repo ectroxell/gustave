@@ -11,6 +11,10 @@ export const characters = sqliteTable('characters', {
     .notNull(),
   race: text('race')
     .notNull(),
+  bio: text('bio')
+    .notNull(),
+  firstAppearanceYear: integer('first_appearance_year')
+    .notNull(),
   createdAt: text('created_at')
     .notNull()
     .default(sql`(current_timestamp)`),

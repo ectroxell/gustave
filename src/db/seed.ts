@@ -11,13 +11,55 @@ import {
 
 // --- Characters ---
 const characterData = [
-  { name: 'Link', title: 'Hero of Hyrule', race: 'Hylian' },
-  { name: 'Zelda', title: 'Princess of Hyrule', race: 'Hylian' },
-  { name: 'Ganondorf', title: 'King of the Gerudo', race: 'Gerudo' },
-  { name: 'Impa', title: 'Sage of Shadow', race: 'Sheikah' },
-  { name: 'Beedle', title: 'Traveling Merchant', race: 'Hylian' },
-  { name: 'Purah', title: 'Director of Hateno Lab', race: 'Sheikah' },
-  { name: 'Sidon', title: 'Prince of the Zora', race: 'Zora' },
+  {
+    name: 'Link',
+    title: 'Hero of Hyrule',
+    race: 'Hylian',
+    bio: 'Veteran hero turned reliable receiver. Known for opening every chest in the stockroom.',
+    firstAppearanceYear: 1986,
+  },
+  {
+    name: 'Zelda',
+    title: 'Princess of Hyrule',
+    race: 'Hylian',
+    bio: 'Princess-turned-procurement-specialist. Has a sixth sense for when shipments will be late.',
+    firstAppearanceYear: 1986,
+  },
+  {
+    name: 'Ganondorf',
+    title: 'King of the Gerudo',
+    race: 'Gerudo',
+    bio: 'Reformed villain, now Gustave\'s most aggressive bulk orderer. Insists on power — purchasing power.',
+    firstAppearanceYear: 1998,
+  },
+  {
+    name: 'Impa',
+    title: 'Sage of Shadow',
+    race: 'Sheikah',
+    bio: 'Head of warehouse security and receiving oversight. Never misses a discrepancy.',
+    firstAppearanceYear: 1986,
+  },
+  {
+    name: 'Beedle',
+    title: 'Traveling Merchant',
+    race: 'Hylian',
+    bio: 'Originally a travelling merchant, now handles inbound logistics. Still says "Thank you!" after every delivery.',
+    firstAppearanceYear: 2002,
+  },
+  {
+    name: 'Purah',
+    title: 'Director of Hateno Lab',
+    race: 'Sheikah',
+    bio: 'Sheikah tech genius who automated half the receiving process. Her Sheikah Slate scanner is legendary.',
+    firstAppearanceYear: 2017,
+  },
+  {
+    name: 'Sidon',
+    title: 'Prince of the Zora',
+    race: 'Zora',
+    bio: 'Zora prince who somehow ended up in warehouse operations. Enthusiastically greets every shipment.',
+    firstAppearanceYear: 2017,
+  },
 ] as const;
 
 // --- Items ---
